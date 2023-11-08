@@ -27,32 +27,31 @@ anim = Animation()
 
 # FDTD loop
 for n = 1:time_steps
+
     # Update electric field
-    for i = 0:2:grid_size
-        for j = 0:2:grid_size
+    for i = 2:2:grid_size
+        for j = 2:2:grid_size
             Ez[i, j] += Δt / ε0 * ((Hy[i, j] - Hy[i-2, j]) / Δx - (Hx[i, j] - Hx[i, j-2]) / Δx)
         end
     end
 
     # Update magnetic field
-    for i = 0:2:grid_size-1
-        for j = 0:2:grid_size-1
+    for i = 2:2:grid_size-1
+        for j = 2:2:grid_size-1
             Hx[i, j+1] -= Δt / μ0 * (Ez[i, j+2] - Ez[i, j]) / Δx
             Hy[i+1, j] += Δt / μ0 * (Ez[i+2, j] - Ez[i, j]) / Δx
         end
     end
 
-
-
     # Source (a hard source)
     Ez[source_position, source_position] += sin(ω * (n) * Δt)
 
     # Visualization/plotting at certain time steps
-    # if n % 50 == 0
-    p = contour(Ez, label="Electric Field", clim=(-1, 1))
-    plot!(title="FDTD 2D at step $n")
-    frame(anim, p)
-    # end
+    if n % 50 == 0
+        p = contour(Ez, label="Electric Field", clim=(-1, 1))
+        plot!(title="FDTD 2D at step $n")
+        frame(anim, p)
+    end
 end
 
 # Save the animation as a GIF
